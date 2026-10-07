@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
-import { Box, Stack, Typography, IconButton, Menu, MenuItem } from '@mui/material'
+import { Box, Stack, Typography, IconButton, Menu, MenuItem, Grid, Paper, Divider } from '@mui/material'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
-import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded'
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded'
+import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded'
 import { AppLayout } from '../components/layout/AppLayout'
 import { CollectionCard } from '../components/collections/CollectionCard'
 import { CollectionFormModal } from '../components/collections/CollectionFormModal'
@@ -22,10 +23,54 @@ export function Collections() {
 
   return (
     <AppLayout>
-      <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4">Collections</Typography>
+      {/* Header Area Redesign */}
+      <Box sx={{ mb: 5, p: 4, borderRadius: 4, background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(255,255,255,0.02) 100%)', border: '1px solid rgba(139, 92, 246, 0.2)' }}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
+          <Box>
+            <Typography variant="h3" sx={{ mb: 1 }}>Spaces</Typography>
+            <Typography sx={{ color: 'text.secondary' }}>Manage your tasks across {collections.length} different spaces.</Typography>
+          </Box>
+          <Box sx={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <AutoAwesomeRoundedIcon sx={{ color: '#fff' }} />
+          </Box>
+        </Stack>
+      </Box>
+
+      {/* Toolbar Redesign */}
+      <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 4, borderBottom: '1px solid rgba(255,255,255,0.05)', pb: 2 }}>
+        <Stack direction="row" spacing={3}>
+          {[
+            ['all', 'All Spaces'],
+            ['favourites', 'Starred'],
+          ].map(([key, label]) => (
+            <Box
+              key={key}
+              onClick={() => setTab(key)}
+              sx={{
+                fontSize: 15,
+                fontWeight: 600,
+                cursor: 'pointer',
+                position: 'relative',
+                color: tab === key ? 'text.primary' : 'text.secondary',
+                '&:after': {
+                  content: '""',
+                  position: 'absolute',
+                  bottom: -17,
+                  left: 0,
+                  right: 0,
+                  height: 2,
+                  bgcolor: tab === key ? '#a855f7' : 'transparent',
+                  borderRadius: 1,
+                  transition: 'background-color 0.2s',
+                }
+              }}
+            >
+              {label}
+            </Box>
+          ))}
+        </Stack>
         <IconButton onClick={(e) => setMenuAnchor(e.currentTarget)} sx={{ color: 'text.secondary' }}>
-          <MoreHorizRoundedIcon />
+          <MoreVertRoundedIcon />
         </IconButton>
         <Menu anchorEl={menuAnchor} open={!!menuAnchor} onClose={() => setMenuAnchor(null)}>
           <MenuItem
@@ -34,74 +79,56 @@ export function Collections() {
               setMenuAnchor(null)
             }}
           >
-            {sortAlpha ? 'Unsort' : 'Sort by name'}
+            {sortAlpha ? 'Reset Sorting' : 'Sort Alphabetically'}
           </MenuItem>
         </Menu>
       </Stack>
 
-      <Stack direction="row" spacing={1} sx={{ mb: 3 }}>
-        {[
-          ['favourites', 'Favourites'],
-          ['all', 'All Collections'],
-        ].map(([key, label]) => (
-          <Box
-            key={key}
-            onClick={() => setTab(key)}
+      <Grid container spacing={3}>
+        {visible.map((c) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={c.id}>
+            <CollectionCard collection={c} />
+          </Grid>
+        ))}
+        <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Paper
+            onClick={() => setFormOpen(true)}
+            elevation={0}
             sx={{
-              px: 2,
-              py: 0.75,
-              borderRadius: 10,
-              fontSize: 13,
-              fontWeight: 600,
+              border: '1px dashed rgba(255,255,255,0.2)',
+              borderRadius: 3,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              minHeight: 140,
               cursor: 'pointer',
-              bgcolor: tab === key ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.03)',
-              color: tab === key ? 'text.primary' : 'text.secondary',
+              bgcolor: 'transparent',
+              color: 'text.secondary',
+              transition: 'all 0.2s',
+              '&:hover': { bgcolor: 'rgba(255,255,255,0.03)', color: '#a855f7', borderColor: '#a855f7' },
             }}
           >
-            {label}
-          </Box>
-        ))}
-      </Stack>
+            <AddRoundedIcon sx={{ fontSize: 32, mb: 1 }} />
+            <Typography sx={{ fontWeight: 600 }}>New Space</Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
-          gap: 2,
-        }}
-      >
-        {visible.map((c) => (
-          <CollectionCard key={c.id} collection={c} />
-        ))}
-        <Box
-          onClick={() => setFormOpen(true)}
-          sx={{
-            border: '1px dashed rgba(255,255,255,0.15)',
-            borderRadius: 3,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: 118,
-            cursor: 'pointer',
-            color: 'text.secondary',
-            '&:hover': { bgcolor: 'rgba(255,255,255,0.03)', color: 'text.primary' },
-          }}
-        >
-          <AddRoundedIcon />
-        </Box>
-      </Box>
-
-      {visible.length === 0 && (
-        <Typography sx={{ color: 'text.secondary', mt: 4 }}>
-          No collections here yet.
-        </Typography>
-      )}
+      {
+        visible.length === 0 && (
+          <Stack alignItems="center" sx={{ py: 8, opacity: 0.5 }}>
+            <Typography variant="h6">No spaces found in this view.</Typography>
+          </Stack>
+        )
+      }
 
       <CollectionFormModal
         open={formOpen}
         onClose={() => setFormOpen(false)}
         onCreate={addCollection}
       />
-    </AppLayout>
+    </AppLayout >
   )
 }

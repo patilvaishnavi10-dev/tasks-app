@@ -1,42 +1,18 @@
 import { useNavigate } from 'react-router-dom'
-
-import { Box, Stack, Typography, Button, Paper } from '@mui/material'
-
+import { Box, Stack, Typography, Button, Grid, Paper } from '@mui/material'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
-
 import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded'
-
 import TodayRoundedIcon from '@mui/icons-material/TodayRounded'
-
 import InsightsRoundedIcon from '@mui/icons-material/InsightsRounded'
-
 import DevicesRoundedIcon from '@mui/icons-material/DevicesRounded'
-
-import { gradient } from '../theme'
-
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
 import { useAuth } from '../context/AuthContext'
 
 const features = [
-  {
-    icon: Inventory2RoundedIcon,
-    title: 'Collections',
-    description: 'Group your tasks into collections like School, Work, or Groceries.',
-  },
-  {
-    icon: TodayRoundedIcon,
-    title: 'Daily Overview',
-    description: "See exactly what's due today across every collection in one place.",
-  },
-  {
-    icon: InsightsRoundedIcon,
-    title: 'Track Progress',
-    description: 'Visual progress rings and stats show how much you have left to do.',
-  },
-  {
-    icon: DevicesRoundedIcon,
-    title: 'Works Everywhere',
-    description: 'Your tasks are saved right in the browser, ready whenever you are.',
-  },
+  { icon: Inventory2RoundedIcon, title: 'Smart Collections', description: 'Organize anything into beautifully crafted collections. No clutter.', colSpan: 12 },
+  { icon: TodayRoundedIcon, title: 'Daily Focus', description: 'See exactly what needs attention today.', colSpan: { xs: 12, md: 6 } },
+  { icon: InsightsRoundedIcon, title: 'Analytics', description: 'Track your growth with rich statistics.', colSpan: { xs: 12, md: 6 } },
+  { icon: DevicesRoundedIcon, title: 'Always Available', description: 'Your tasks live securely in your browser.', colSpan: 12 },
 ]
 
 export function Landing() {
@@ -44,327 +20,65 @@ export function Landing() {
   const { user } = useAuth()
 
   const scrollToFeatures = () => {
-    document.getElementById('features')?.scrollIntoView({
-      behavior: 'smooth',
-    })
+    document.getElementById('explore')?.scrollIntoView({ behavior: 'smooth' })
   }
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        bgcolor: '#0b0b10',
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Header */}
-      <Stack
-        direction="row"
-        sx={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          position: 'relative',
-          px: { xs: 3, md: 6 },
-          py: 3,
-        }}
-      >
-        <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-          <Box
-            sx={{
-              width: 30,
-              height: 30,
-              borderRadius: 1.5,
-              background: gradient,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <CheckRoundedIcon sx={{ fontSize: 18, color: '#fff' }} />
+    <Box sx={{ minHeight: '100vh', position: 'relative', pt: 3 }}>
+      {/* Navbar */}
+      <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', px: 4, mb: 10 }}>
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <Box sx={{ p: 0.5, borderRadius: 2, background: 'linear-gradient(135deg, #6366f1, #ec4899)' }}>
+            <CheckRoundedIcon sx={{ color: '#fff', fontSize: 24 }} />
           </Box>
-
-          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
-            tasks.
-          </Typography>
-
-          <Typography
-            onClick={scrollToFeatures}
-            sx={{
-              color: 'text.secondary',
-              ml: 2,
-              cursor: 'pointer',
-              '&:hover': {
-                color: 'text.primary',
-              },
-            }}
-          >
-            Features
-          </Typography>
+          <Typography variant="h6" fontWeight={800}>Tasksio</Typography>
         </Stack>
-
-        <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-          <Typography
-            onClick={() => navigate('/signin')}
-            sx={{
-              cursor: 'pointer',
-              fontWeight: 600,
-            }}
-          >
-            Log in
-          </Typography>
-
-          <Button
-            onClick={() => navigate('/signin?mode=signup')}
-            sx={{
-              background: gradient,
-              color: '#fff',
-              px: 2.5,
-              '&:hover': {
-                background: gradient,
-                opacity: 0.9,
-              },
-            }}
-          >
-            Sign up
-          </Button>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Typography sx={{ cursor: 'pointer', fontWeight: 600, '&:hover': { color: '#a855f7' } }} onClick={() => navigate('/signin')}>Login</Typography>
+          <Button variant="contained" onClick={() => navigate('/signin?mode=signup')}>Sign up free</Button>
         </Stack>
       </Stack>
 
       {/* Hero Section */}
-      <Box
-        sx={{
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Decorative background balls */}
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 80,
-            left: { xs: -50, md: '8%' },
-            width: 150,
-            height: 150,
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #ec4899, #a855f7)',
-            zIndex: 0,
-          }}
-        />
-
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 40,
-            right: { xs: -40, md: '12%' },
-            width: 130,
-            height: 130,
-            borderRadius: '50%',
-            bgcolor: '#1e1e28',
-            filter: 'blur(4px)',
-            zIndex: 0,
-          }}
-        />
-
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: -80,
-            right: { xs: -70, md: '8%' },
-            width: 220,
-            height: 220,
-            borderRadius: '50%',
-            background: gradient,
-            zIndex: 0,
-          }}
-        />
-
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: 10,
-            left: { xs: 20, md: '18%' },
-            width: 70,
-            height: 70,
-            borderRadius: '50%',
-            bgcolor: '#15151d',
-            zIndex: 0,
-          }}
-        />
-
-        <Stack
-          sx={{
-            alignItems: 'center',
-            textAlign: 'center',
-            position: 'relative',
-            zIndex: 1,
-            px: 3,
-            pt: { xs: 4, md: 8 },
-            pb: { xs: 8, md: 10 },
-          }}
-        >
-          <Typography
-            variant="h3"
-            sx={{
-              fontSize: { xs: 34, md: 48 },
-            }}
-          >
-            Tsks, just tasks.
-            <Box
-              component="span"
-              sx={{
-                color: '#ec4899',
-              }}
-            >
-              .
-            </Box>
-          </Typography>
-
-          <Typography
-            sx={{
-              color: 'text.secondary',
-              mt: 2,
-              maxWidth: 420,
-            }}
-          >
-            Keep track of the daily tasks in life and get that satisfaction upon completion.
-          </Typography>
-
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{
-              mt: 4,
-            }}
-          >
-            <Button
-              size="large"
-              onClick={() => navigate(user ? '/dashboard' : '/signin')}
-              sx={{
-                background: gradient,
-                color: '#fff',
-                px: 3,
-                '&:hover': {
-                  background: gradient,
-                  opacity: 0.9,
-                },
-              }}
-            >
-              Get Started
-            </Button>
-
-            <Button
-              size="large"
-              onClick={scrollToFeatures}
-              sx={{
-                bgcolor: 'rgba(255,255,255,0.06)',
-                color: 'text.primary',
-                px: 3,
-                '&:hover': {
-                  bgcolor: 'rgba(255,255,255,0.1)',
-                },
-              }}
-            >
-              Learn More
-            </Button>
-          </Stack>
-        </Stack>
-      </Box>
-
-      {/* Features Section */}
-      <Box
-        id="features"
-        sx={{
-          position: 'relative',
-          px: { xs: 3, md: 6 },
-          pb: 10,
-          pt: 4,
-        }}
-      >
-        <Typography
-          variant="h4"
-          sx={{
-            textAlign: 'center',
-            mb: 1,
-          }}
-        >
-          Everything you need to stay on top
-        </Typography>
-
-        <Typography
-          sx={{
-            color: 'text.secondary',
-            textAlign: 'center',
-            mb: 5,
-          }}
-        >
-          Simple tools that keep your tasks organized and moving forward.
-        </Typography>
-
-        <Box
-          sx={{
-            display: 'grid',
-            gap: 2.5,
-            maxWidth: 1000,
-            mx: 'auto',
-            gridTemplateColumns: {
-              xs: '1fr',
-              sm: 'repeat(2, 1fr)',
-              md: 'repeat(4, 1fr)',
-            },
-          }}
-        >
-          {features.map((f) => (
-            <Paper
-              key={f.title}
-              elevation={0}
-              sx={{
-                bgcolor: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.06)',
-                borderRadius: 3,
-                p: 2.5,
-              }}
-            >
-              <Box
-                sx={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 2,
-                  background: gradient,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  mb: 2,
-                }}
-              >
-                <f.icon
-                  sx={{
-                    color: '#fff',
-                    fontSize: 20,
-                  }}
-                />
-              </Box>
-
-              <Typography
-                sx={{
-                  fontWeight: 700,
-                  mb: 0.5,
-                }}
-              >
-                {f.title}
-              </Typography>
-
-              <Typography
-                sx={{
-                  color: 'text.secondary',
-                  fontSize: 14,
-                }}
-              >
-                {f.description}
-              </Typography>
-            </Paper>
-          ))}
+      <Stack sx={{ alignItems: 'center', textAlign: 'center', px: 3, mb: 15 }}>
+        <Box sx={{ mb: 2, display: 'inline-flex', alignItems: 'center', gap: 1, px: 2, py: 0.5, borderRadius: 10, bgcolor: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)' }}>
+          <Typography sx={{ color: '#818cf8', fontSize: 13, fontWeight: 700 }}>v2.0 is out now</Typography>
         </Box>
+        <Typography variant="h1" sx={{ fontSize: { xs: 44, md: 72 }, maxWidth: 800, mb: 3, lineHeight: 1.1 }}>
+          The new standard for <span style={{ background: 'linear-gradient(135deg, #6366f1, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>productivity.</span>
+        </Typography>
+        <Typography sx={{ color: 'text.secondary', fontSize: 18, maxWidth: 500, mb: 5 }}>
+          A magnificent approach to tracking your life. Beautifully designed, blazingly fast, and completely free.
+        </Typography>
+        <Button
+          variant="contained"
+          size="large"
+          onClick={() => navigate(user ? '/dashboard' : '/signin')}
+          endIcon={<ArrowForwardRoundedIcon />}
+          sx={{ px: 4, py: 1.5, fontSize: 16 }}
+        >
+          {user ? 'Go to Dashboard' : 'Start Organizing'}
+        </Button>
+      </Stack>
+
+      {/* Bento Grid Features */}
+      <Box id="explore" sx={{ px: { xs: 3, md: 8 }, pb: 15 }}>
+        <Typography variant="h3" sx={{ textAlign: 'center', mb: 1 }}>Discover the power.</Typography>
+        <Typography sx={{ color: 'text.secondary', textAlign: 'center', mb: 8 }}>Everything you need, nothing you don't.</Typography>
+
+        <Grid container spacing={3} maxWidth={1000} mx="auto">
+          {features.map((f, i) => (
+            <Grid item {...(typeof f.colSpan === 'number' ? { xs: f.colSpan } : f.colSpan)} key={i}>
+              <Paper sx={{ p: 4, height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'rgba(255,255,255,0.02)' }}>
+                <Box sx={{ width: 48, height: 48, borderRadius: 3, background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
+                  <f.icon sx={{ color: '#a855f7', fontSize: 28 }} />
+                </Box>
+                <Typography variant="h5" sx={{ mb: 1 }}>{f.title}</Typography>
+                <Typography sx={{ color: 'text.secondary', fontSize: 16 }}>{f.description}</Typography>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
       </Box>
     </Box>
   )

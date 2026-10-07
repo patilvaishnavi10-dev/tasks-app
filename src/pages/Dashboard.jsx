@@ -1,190 +1,108 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Box, Stack, Typography, Paper, IconButton } from '@mui/material'
-import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded'
-import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
-import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
+import { Box, Stack, Typography, Paper, IconButton, Grid, CircularProgress } from '@mui/material'
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import { AppLayout } from '../components/layout/AppLayout'
 import { CollectionIcon } from '../components/collections/icons'
 import { TaskRow } from '../components/tasks/TaskRow'
 import { useAuth } from '../context/AuthContext'
 import { useData } from '../context/DataContext'
 
-function OverviewSection({ collection, onToggle }) {
-  const [expanded, setExpanded] = useState(true)
-  const navigate = useNavigate()
-  const dueTasks = collection.tasks.filter((t) => !t.done && t.due)
-
-  if (dueTasks.length === 0) return null
-
-  return (
-    <Paper
-      elevation={0}
-      sx={{
-        bgcolor: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.06)',
-        borderRadius: 3,
-        p: 2,
-        mb: 2,
-      }}
-    >
-      <Stack
-        direction="row"
-        onClick={() => setExpanded((v) => !v)}
-        sx={{ alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', mb: expanded ? 1 : 0 }}
-      >
-        <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-          <Box
-            sx={{
-              width: 28,
-              height: 28,
-              borderRadius: 1.5,
-              bgcolor: collection.color,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <CollectionIcon icon={collection.icon} sx={{ fontSize: 15, color: '#fff' }} />
-          </Box>
-          <Typography sx={{ fontWeight: 700 }}>{collection.name}</Typography>
-        </Stack>
-        <IconButton size="small" sx={{ color: 'text.secondary' }}>
-          {expanded ? <ExpandLessRoundedIcon /> : <ExpandMoreRoundedIcon />}
-        </IconButton>
-      </Stack>
-
-      {expanded && (
-        <>
-          <Stack divider={<Box sx={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }} />}>
-            {dueTasks.map((task) => (
-              <TaskRow
-                key={task.id}
-                task={task}
-                color={collection.color}
-                onToggle={() => onToggle(collection.id, task.id)}
-              />
-            ))}
-          </Stack>
-          <Stack
-            direction="row"
-            spacing={0.5}
-            onClick={() => navigate(`/collections/${collection.id}`)}
-            sx={{
-              alignItems: 'center',
-              mt: 1,
-              pt: 1.5,
-              borderTop: '1px solid rgba(255,255,255,0.05)',
-              cursor: 'pointer',
-              justifyContent: 'center',
-              color: 'text.secondary',
-              '&:hover': { color: 'text.primary' },
-            }}
-          >
-            <Typography sx={{ fontSize: 13, fontWeight: 600 }}>Go to Collection</Typography>
-            <ArrowForwardRoundedIcon sx={{ fontSize: 15 }} />
-          </Stack>
-        </>
-      )}
-    </Paper>
-  )
-}
-
-function Statistics({ collections }) {
-  const total = collections.reduce((acc, c) => acc + c.tasks.length, 0)
-  const done = collections.reduce((acc, c) => acc + c.tasks.filter((t) => t.done).length, 0)
-  const rate = total === 0 ? 0 : Math.round((done / total) * 100)
-
-  return (
-    <Stack spacing={2}>
-      <Paper
-        elevation={0}
-        sx={{ bgcolor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 3, p: 2.5 }}
-      >
-        <Typography sx={{ color: 'text.secondary', fontSize: 13 }}>Overall completion</Typography>
-        <Typography variant="h4" sx={{ mt: 0.5 }}>{rate}%</Typography>
-        <Typography sx={{ color: 'text.secondary', fontSize: 13, mt: 0.5 }}>
-          {done} of {total} tasks done
-        </Typography>
-      </Paper>
-      {collections.map((c) => {
-        const t = c.tasks.length
-        const d = c.tasks.filter((x) => x.done).length
-        const p = t === 0 ? 0 : Math.round((d / t) * 100)
-        return (
-          <Paper
-            key={c.id}
-            elevation={0}
-            sx={{ bgcolor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 3, p: 2 }}
-          >
-            <Stack direction="row" sx={{ justifyContent: 'space-between', mb: 1 }}>
-              <Typography sx={{ fontWeight: 600, fontSize: 14 }}>{c.name}</Typography>
-              <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>{d}/{t}</Typography>
-            </Stack>
-            <Box sx={{ height: 6, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
-              <Box sx={{ height: '100%', width: `${p}%`, bgcolor: c.color, borderRadius: 3 }} />
-            </Box>
-          </Paper>
-        )
-      })}
-    </Stack>
-  )
-}
-
 export function Dashboard() {
   const { user } = useAuth()
   const { collections, toggleTask } = useData()
-  const [tab, setTab] = useState('overview')
+  const navigate = useNavigate()
 
-  const firstName = (user?.name || '').split(' ')[0] || 'there'
+  const firstName = (user?.name || '').split(' ')[0] || 'Friend'
+  const allTasksCount = collections.reduce((acc, c) => acc + c.tasks.length, 0)
+  const doneTasksCount = collections.reduce((acc, c) => acc + c.tasks.filter((t) => t.done).length, 0)
+  const percentDone = allTasksCount === 0 ? 0 : Math.round((doneTasksCount / allTasksCount) * 100)
 
   return (
     <AppLayout withSidebar>
-      <Typography sx={{ color: 'text.secondary', fontSize: 14, mb: 0.5 }}>Dashboard</Typography>
-      <Typography variant="h4" sx={{ mb: 3 }}>
-        Good morning,
-        <br />
-        {user?.name || firstName}
-      </Typography>
+      <Box sx={{ mb: 6, mt: 2 }}>
+        <Typography sx={{ color: 'text.secondary', fontSize: 16, textTransform: 'uppercase', letterSpacing: 2, mb: 1 }}>
+          Overview
+        </Typography>
+        <Typography variant="h2" sx={{ background: 'linear-gradient(135deg, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          Welcome back,<br /> {firstName}.
+        </Typography>
+      </Box>
 
-      <Stack direction="row" spacing={1} sx={{ mb: 3 }}>
-        {[
-          ['overview', 'Daily Overview'],
-          ['stats', 'Statistics'],
-        ].map(([key, label]) => (
-          <Box
-            key={key}
-            onClick={() => setTab(key)}
-            sx={{
-              px: 2,
-              py: 0.75,
-              borderRadius: 10,
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: 'pointer',
-              bgcolor: tab === key ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.03)',
-              color: tab === key ? 'text.primary' : 'text.secondary',
-            }}
-          >
-            {label}
-          </Box>
-        ))}
-      </Stack>
+      <Grid container spacing={3}>
+        {/* Left Column: Stats & Progress */}
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ p: 4, mb: 3, textAlign: 'center', background: 'linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, rgba(255,255,255,0.02) 100%)' }}>
+            <Box sx={{ position: 'relative', display: 'inline-flex', mb: 2 }}>
+              <CircularProgress variant="determinate" value={100} size={120} thickness={4} sx={{ color: 'rgba(255,255,255,0.05)' }} />
+              <CircularProgress variant="determinate" value={percentDone} size={120} thickness={4} sx={{ color: '#ec4899', position: 'absolute', left: 0 }} />
+              <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                <Typography variant="h4">{percentDone}%</Typography>
+              </Box>
+            </Box>
+            <Typography variant="h6">Overall Progress</Typography>
+            <Typography sx={{ color: 'text.secondary', fontSize: 14 }}>{doneTasksCount} of {allTasksCount} tasks completed</Typography>
+          </Paper>
 
-      {tab === 'overview' ? (
-        <Box sx={{ maxWidth: 480 }}>
-          {collections.map((c) => (
-            <OverviewSection key={c.id} collection={c} onToggle={toggleTask} />
-          ))}
-          {collections.every((c) => c.tasks.filter((t) => !t.done && t.due).length === 0) && (
-            <Typography sx={{ color: 'text.secondary' }}>Nothing due today. Enjoy your day!</Typography>
-          )}
-        </Box>
-      ) : (
-        <Box sx={{ maxWidth: 480 }}>
-          <Statistics collections={collections} />
-        </Box>
-      )}
+          <Typography variant="h6" sx={{ mb: 2, mt: 4 }}>Workspaces</Typography>
+          <Stack spacing={1.5}>
+            {collections.map(c => {
+              const total = c.tasks.length
+              const done = c.tasks.filter(t => t.done).length
+              return (
+                <Paper key={c.id} onClick={() => navigate(`/collections/${c.id}`)} sx={{ p: 2, cursor: 'pointer', '&:hover': { bgcolor: 'rgba(255,255,255,0.06)' } }}>
+                  <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Stack direction="row" spacing={1.5} alignItems="center">
+                      <Box sx={{ width: 32, height: 32, borderRadius: 2, bgcolor: c.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <CollectionIcon icon={c.icon} sx={{ color: '#fff', fontSize: 16 }} />
+                      </Box>
+                      <Typography sx={{ fontWeight: 600 }}>{c.name}</Typography>
+                    </Stack>
+                    <Typography sx={{ fontSize: 12, color: 'text.secondary', bgcolor: 'rgba(255,255,255,0.1)', px: 1, py: 0.5, borderRadius: 1 }}>{done} / {total}</Typography>
+                  </Stack>
+                </Paper>
+              )
+            })}
+          </Stack>
+        </Grid>
+
+        {/* Right Column: Focus List */}
+        <Grid item xs={12} md={8}>
+          <Paper sx={{ p: { xs: 2, md: 4 } }}>
+            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 3 }}>
+              <PlayArrowRoundedIcon sx={{ color: '#a855f7' }} />
+              <Typography variant="h5">Today's Focus</Typography>
+            </Stack>
+
+            <Stack spacing={3}>
+              {collections.map(c => {
+                const dueTasks = c.tasks.filter(t => !t.done && t.due)
+                if (dueTasks.length === 0) return null
+                return (
+                  <Box key={c.id}>
+                    <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
+                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: c.color }} />
+                      <Typography sx={{ color: 'text.secondary', fontSize: 14, fontWeight: 600 }}>{c.name}</Typography>
+                    </Stack>
+                    <Stack divider={<Box sx={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }} />}>
+                      {dueTasks.map(t => (
+                        <TaskRow key={t.id} task={t} color={c.color} onToggle={() => toggleTask(c.id, t.id)} />
+                      ))}
+                    </Stack>
+                  </Box>
+                )
+              })}
+              {collections.every((c) => c.tasks.filter((t) => !t.done && t.due).length === 0) && (
+                <Stack alignItems="center" sx={{ py: 6, opacity: 0.5 }}>
+                  <CheckCircleRoundedIcon sx={{ fontSize: 48, color: '#ec4899', mb: 2 }} />
+                  <Typography variant="h6">You're all caught up!</Typography>
+                </Stack>
+              )}
+            </Stack>
+          </Paper>
+        </Grid>
+      </Grid>
     </AppLayout>
   )
 }
